@@ -136,6 +136,30 @@ vector<vector<P>> QSP(vector<P> v){
 
 // Pentagonal Steiner Points
 vector<vector<P>> PSP(vector<P> v){
+	vector<vector<P>> r;
+	vector<tuple<int,int,int,int,int>> T = {{0,1,2,3,4},{1,2,3,4,0},{2,3,4,0,1},{3,4,0,1,2},{4,0,1,2,3}};
+	for(auto &[a,b,c,d,e]:T){
+		vector<P> t;
+		P X, Y, Z, W, A, B, C;
+		t = CC({v[a],Dis(v[a],v[b])},{v[b],Dis(v[a],v[b])});
+		X = ccw(v[a],v[b],v[c]) == ccw(v[a],v[b],t[0]) ? t[1] : t[0];
+		t = CC({v[d],Dis(v[d],v[e])},{v[e],Dis(v[d],v[e])});
+		Y = ccw(v[d],v[e],v[a]) == ccw(v[d],v[e],t[0]) ? t[1] : t[0];
+		t = CC({X,Dis(X,v[c])},{v[c],Dis(X,v[c])});
+		Z = ccw(X,v[c],v[d]) == ccw(X,v[c],t[0]) ? t[1] : t[0];
+		t = CC({Y,Dis(Y,v[c])},{v[c],Dis(Y,v[c])});
+		W = ccw(Y,v[c],v[b]) == ccw(Y,v[c],t[0]) ? t[1] : t[0];
+		
+		t = CC(OC(v[c],Y,W),OC(v[c],X,Z));
+		if(t.size()<2) continue; // none A
+		A = Dis(v[c],t[0]) < Dis(v[c],t[1]) ? t[1] : t[0];
+		t = LC(A,X,OC(v[a],v[b],X));
+		B = Dis(X,t[0]) < Dis(X,t[1]) ? t[1] : t[0];
+		t = LC(A,Y,OC(v[d],v[e],Y));
+		C = Dis(Y,t[0]) < Dis(Y,t[1]) ? t[1] : t[0];
+		r.push_back({A,B,C});
+	}
+	return r;
 }
 
 int main(){
@@ -163,6 +187,12 @@ int main(){
 		}
 	}
 	else if(n==5){
+		auto u = PSP(w);
+		printf("MST : %lf\n",MST(w));
+		for(auto&tt:u) {
+			for(auto &t:tt) printf("%lf %lf\n",t.x,t.y);
+			printf("PSP : %lf\n",MST(mergeP(w,tt)));
+		}
 	}
 }
 
