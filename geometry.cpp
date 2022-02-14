@@ -75,15 +75,19 @@ vector<P> ConvexHull(vector<P> v){
 
 // return MST length of given vertices
 ld MST(vector<P> v){
-	vector<bool> vis(v.size(),0);
+	vector<int> vis(v.size());
+	for(int i=0; i<vis.size(); ++i) vis[i]=i;
 	vector<pair<ld,pair<int,int>>> e;
 	for(int i=0; i<v.size(); ++i) for(int j=i+1; j<v.size(); ++j) e.push_back({Dis(v[i],v[j]),{i,j}});
 	sort(e.begin(),e.end());
 	ld ret = 0;
 	for(auto [a,b]:e){
-		if(vis[b.x] && vis[b.y]) continue;
+		int x = b.x, y = b.y;
+		while(x!=vis[x]) x=vis[x];
+		while(y!=vis[y]) y=vis[y];
+		if(x==y) continue;
 		ret += a;
-		vis[b.x] = vis[b.y] = 1;
+		vis[x] = y;
 	}
 	return ret;
 }
@@ -154,7 +158,7 @@ int main(){
 	for(auto &t:v) scanf("%Lf %Lf",&t.x,&t.y);
 	auto w = ConvexHull(v);
 	if(w.size()!=n) { puts("Error! Concave!"); return 0; }
-	
+		
 	if(n==3){
 		auto u = TSP(w);
 		printf("MST : %Lf\n",MST(w));
